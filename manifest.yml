@@ -1,0 +1,30 @@
+applications:
+- memory: 1024M
+  services:
+  - cognitive-cloudantNoSQLDB
+  - cognitive-iotf-service
+  - cognitive-speech_to_text
+  - cognitive-text_to_speech
+  - cognitive-conversation
+  - cognitive-weatherinsights
+  env:
+    NODE_RED_STORAGE_NAME: cognitive-cloudantNoSQLDB
+declared-services:
+  cognitive-cloudantNoSQLDB:
+    label: cloudantNoSQLDB
+    plan:  Lite
+  cognitive-iotf-service:
+    label: iotf-service
+    plan: iotf-service-free
+  cognitive-speech_to_text:
+    label: speech_to_text
+    plan: standard
+  cognitive-text_to_speech:
+    label: text_to_speech
+    plan: standard
+  cognitive-conversation:
+    label: conversation
+    plan: free
+  cognitive-weatherinsights:
+    label: weatherinsights
+    plan: Free-v2
