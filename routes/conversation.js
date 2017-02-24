@@ -21,6 +21,7 @@ var conversation = watson.conversation( {
 }, vcapServices.getCredentials('conversation'));
 // load local VCAP configuration
 var vcapLocal = null;
+
 try {
   vcapLocal = require("./vcap-local.json");
   console.log("Loaded local VCAP", vcapLocal);
@@ -46,8 +47,7 @@ router.post( '/', function(req, res, next) {
   lat = req.body.lat;
   long = req.body.long;
   console.log('input text--------------------------->>>>>');
-  console.log(req.body.text);
-  var workspace = '0f120182-c05f-4b1a-b901-72ab52a95c9a';
+  var workspace = '5fb5b7c3-83d1-4309-8a94-71c4bb7f5792';
   	var err ;
   if ( !workspace ) {
   	err = {
@@ -71,11 +71,14 @@ if ( req.body ) {
 	}
   // Send the input to the conversation service
 conversation.message( payload, function(err, data) {
+
     if ( err ) {
+          
       return res.status( err.code || 500 ).json( err );
     }
 updateMessage(payload, data, function(err, data) {
-      return res.status( 200 ).json( data );
+       
+       return res.status( 200 ).json( data );
     });
   });
 });

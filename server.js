@@ -1,48 +1,161 @@
-/**
- * Copyright 2016 IBM Corp.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
-
-/*eslint-env node */
 "use strict";  /* always for Node.JS, never global in the browser */
 
 require('dotenv').config(); // will read configuration from the .env file
 
 // Set the modules
-var http     = require('http'),
-    path     = require("path"),     
-    express  = require("express"),
-    RED      = require("node-red"),
-//  iotp     = require('./app/iot/iotp'),
-    cloudant = require('./app/cloudant/cloudant')
-;
+
+
+var https = require('https');
+var http = require('http');
+var path = require('path');
+var express  = require("express");
+var fs = require('fs');
 
 // Create an Express app
 var app = express();
 
-var cfenv = require("cfenv");
-var appEnv = cfenv.getAppEnv();
-var VCAP_APPLICATION = JSON.parse(process.env.VCAP_APPLICATION);
+//var cfenv = require("cfenv");
+//var appEnv = cfenv.getAppEnv();
+//var str_config = '{"VCAP_APPLICATION":"Healthbot"}';
+/*
+var str_config = '{"cloudantNoSQLDB": [{
+            "credentials": {
+                "username": "793c5b54-0288-43e3-8840-d34e6bde283c-bluemix",
+                "password": "e7fc1499d1d34bab182e3e51aa5700ad695318b4939e0a99924a081594be01b4",
+                "host": "793c5b54-0288-43e3-8840-d34e6bde283c-bluemix.cloudant.com",
+                "port": 443,
+                "url": "https://793c5b54-0288-43e3-8840-d34e6bde283c-bluemix:e7fc1499d1d34bab182e3e51aa5700ad695318b4939e0a99924a081594be01b4@793c5b54-0288-43e3-8840-d34e6bde283c-bluemix.cloudant.com"
+            },
+            "syslog_drain_url": null,
+            "label": "cloudantNoSQLDB",
+            "provider": null,
+            "plan": "Lite",
+            "name": "cognitive-cloudantNoSQLDB",
+            "tags": [
+                "data_management",
+                "ibm_created",
+                "lite",
+                "ibm_dedicated_public"
+            ]
+        }
+    ],
+    "iotf-service": [
+        {
+            "credentials": {
+                "iotCredentialsIdentifier": "a2g6k39sl6r5",
+                "mqtt_host": "u0wvve.messaging.internetofthings.ibmcloud.com",
+                "mqtt_u_port": 1883,
+                "mqtt_s_port": 8883,
+                "http_host": "u0wvve.internetofthings.ibmcloud.com",
+                "org": "u0wvve",
+                "apiKey": "a-u0wvve-gwj4azqhok",
+                "apiToken": "?93l_-524l2XMIZfcF"
+            },
+            "syslog_drain_url": null,
+            "label": "iotf-service",
+            "provider": null,
+            "plan": "iotf-service-free",
+            "name": "cognitive-iotf-service",
+            "tags": [
+                "internet_of_things",
+                "Internet of Things",
+                "ibm_created",
+                "ibm_dedicated_public",
+                "lite"
+            ]
+        }
+    ],
+    "speech_to_text": [
+        {
+            "credentials": {
+                "url": "https://stream.watsonplatform.net/speech-to-text/api",
+                "username": "3245b3e7-13f7-43cb-9e89-68c7aeb39fd6",
+                "password": "7bDJWKga4fOR"
+            },
+            "syslog_drain_url": null,
+            "label": "speech_to_text",
+            "provider": null,
+            "plan": "standard",
+            "name": "cognitive-speech_to_text",
+            "tags": [
+                "watson",
+                "ibm_created",
+                "ibm_dedicated_public"
+            ]
+        }
+    ],
+    "text_to_speech": [
+        {
+            "credentials": {
+                "url": "https://stream.watsonplatform.net/text-to-speech/api",
+                "username": "b5a7c0f7-b76b-470c-a95e-706b2a2c9649",
+                "password": "jpUblXoryopE"
+            },
+            "syslog_drain_url": null,
+            "label": "text_to_speech",
+            "provider": null,
+            "plan": "standard",
+            "name": "cognitive-text_to_speech",
+            "tags": [
+                "watson",
+                "ibm_created",
+                "ibm_dedicated_public"
+            ]
+        }
+    ],
+    "conversation": [
+        {
+            "credentials": {
+                "url": "https://gateway.watsonplatform.net/conversation/api",
+                "username": "f9f0cfaa-83dc-40c4-a9a6-2baff50879f8",
+                "password": "YPlL5WuaJKRF"
+            },
+            "syslog_drain_url": null,
+            "label": "conversation",
+            "provider": null,
+            "plan": "free",
+            "name": "cognitive-conversation",
+            "tags": [
+                "watson",
+                "ibm_created",
+                "ibm_dedicated_public"
+            ]
+        }
+    ],
+    "weatherinsights": [
+        {
+            "credentials": {
+                "username": "2d46ed36-1d2e-4755-b6c0-71a8a0c79bab",
+                "password": "ttBmB6ZCdK",
+                "host": "twcservice.mybluemix.net",
+                "port": 443,
+                "url": "https://2d46ed36-1d2e-4755-b6c0-71a8a0c79bab:ttBmB6ZCdK@twcservice.mybluemix.net"
+            },
+            "syslog_drain_url": null,
+            "label": "weatherinsights",
+            "provider": null,
+            "plan": "Free-v2",
+            "name": "cognitive-weatherinsights",
+            "tags": [
+                "big_data",
+                "ibm_created",
+                "ibm_dedicated_public"
+            ]
+        }
+    ]
+}';
+*/
+
+
+//var VCAP_APPLICATION = JSON.parse(str_config);
+//console.log(VCAP_APPLICATION);
 
 // Add a simple route for static content served from './public'
 app.use( "/", express.static("public") );
 
-// Create a server
-var httpServer = http.createServer(app);
-var port = process.env.PORT || 8080;
 
 // Use application-level middleware for common functionality
+
 app.use(require('morgan')('combined'));
 app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({ extended: true }));
@@ -51,82 +164,14 @@ app.use('/conversejs', require('./routes/conversation'));
 app.use('/api/speech-to-text/', require('./routes/stt-token'));
 app.use('/api/text-to-speech/', require('./routes/tts-token'));
 
-// Set up the client for sending data to Node-RED
-var Client = require('node-rest-client').Client;
-var client = new Client();
- 
-/*
- * Begin set-up for the Node-RED directory. The settings variable has similar details to bluemix-settings.js.
- */
-
-var settings = {
-    httpAdminRoot:"/red",    
-    httpNodeRoot: "/",               
-    mqttReconnectTime: 4000,
-    serialReconnectTime: 4000,
-    debugMaxLength: 1000,
-	
-	// Basic flow protection, password is password using bcrypt algorithim 
-	adminAuth: {
-        type: "credentials",
-        users: [{
-            username: "admin",
-            password: "$2a$08$zZWtXTja0fB1pzD4sHCMyOCMYz2Z6dNbM6tl8sJogENOMcxWV9DN.",
-            permissions: "*"
-        }]
-    },
-
-    // Add the bluemix-specific nodes in
-    nodesDir: path.join(__dirname,"nodes"),
-
-    // Blacklist the non-bluemix friendly nodes
-    nodesExcludes:['66-mongodb.js','75-exec.js','35-arduino.js','36-rpi-gpio.js','25-serial.js','28-tail.js','50-file.js','31-tcpin.js','32-udp.js','23-watch.js'],
-
-    // Enable module reinstalls on start-up; this ensures modules installed
-    // post-deploy are restored after a restage
-    autoInstallModules: true,
-    
-    functionGlobalContext: { // enables and pre-populates the context.global variable
-    },
-
-    storageModule: require("./couchstorage")
+// Create a server
+var ssloptions = {
+   key  : fs.readFileSync('./server.key'),
+   cert : fs.readFileSync('./server.crt')
 };
+var port = process.env.PORT || 3030;
 
-// Check to see if Cloudant service exists
-settings.couchAppname = VCAP_APPLICATION['application_name'];
 
-if (process.env.VCAP_SERVICES) {
-// Running on Bluemix. Parse the port and host that we've been assigned.
-    var env = JSON.parse(process.env.VCAP_SERVICES);
-    console.log('VCAP_SERVICES: %s', process.env.VCAP_SERVICES);
-    // Also parse Cloudant settings.
-    var couchService = env['cloudantNoSQLDB'][0]['credentials'];    
-}
-
-if (!couchService) {
-    console.log("Failed to find Cloudant service");
-    if (process.env.NODE_RED_STORAGE_NAME) {
-        console.log(" - using NODE_RED_STORAGE_NAME environment variable: "+process.env.NODE_RED_STORAGE_NAME);
-    }
-    throw new Error("No cloudant service found");
-}    
-settings.couchUrl = couchService.url;
-
-//Start listening to IOTP
-//iotp.initIoTp();
-
-// Initialise the runtime with a server and settings
-RED.init( httpServer, settings );
-
-// Serve the editor UI from /red
-app.use( settings.httpAdminRoot, RED.httpAdmin );
-
-// Serve the http nodes UI from /api
-app.use( settings.httpNodeRoot, RED.httpNode );
-
-httpServer.listen( port, function(){
-  console.log('App listening on port: ', port);
+var httpsServer = https.createServer(ssloptions,app).listen(port, function () {
+  console.log('Example app listening on port '+port)
 });
-
-// Start the runtime
-RED.start();
