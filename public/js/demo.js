@@ -32,11 +32,12 @@ $(document).ready(function() {
   };
   
   var converseUrl = function() {
-    if (isNodeJs()) {
-      return '/conversejs';
-    } else {
-      return '/conversered';
-    }
+    //if (isNodeJs()) {
+    //  return '/conversejs';
+    //} else {
+    //  return '/conversered';
+    //}
+	return '/conversejs';
   };
 
   

@@ -14,14 +14,13 @@ var context_var = {};
 // Create the service wrapper
 var conversation = watson.conversation( {
   url: 'https://gateway.watsonplatform.net/conversation/api',
-  username: process.env.conversation_username || '<USERNAME>',
-  password: process.env.convesation_password || '<PASSWORD>',
+  username: 'f9f0cfaa-83dc-40c4-a9a6-2baff50879f8',
+  password: 'YPlL5WuaJKRF',
   version_date: '2016-07-11',
   version: 'v1'
 }, vcapServices.getCredentials('conversation'));
 // load local VCAP configuration
 var vcapLocal = null;
-
 try {
   vcapLocal = require("./vcap-local.json");
   console.log("Loaded local VCAP", vcapLocal);
@@ -47,6 +46,7 @@ router.post( '/', function(req, res, next) {
   lat = req.body.lat;
   long = req.body.long;
   console.log('input text--------------------------->>>>>');
+  console.log(req.body.text);
   var workspace = '5fb5b7c3-83d1-4309-8a94-71c4bb7f5792';
   	var err ;
   if ( !workspace ) {
@@ -71,14 +71,11 @@ if ( req.body ) {
 	}
   // Send the input to the conversation service
 conversation.message( payload, function(err, data) {
-
     if ( err ) {
-          
       return res.status( err.code || 500 ).json( err );
     }
 updateMessage(payload, data, function(err, data) {
-       
-       return res.status( 200 ).json( data );
+      return res.status( 200 ).json( data );
     });
   });
 });
