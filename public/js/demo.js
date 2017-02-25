@@ -24,11 +24,11 @@ $(document).ready(function() {
 	$micButton = $('.chat-window--microphone-button');
 
   var isNodeJs = function() {
-    return 'nodeJs' == $("input[name=platform]:checked").val();
+    return true;
   };
   
   var isNodeRed = function() {
-    return 'nodeRed' == $("input[name=platform]:checked").val();
+    return false;
   };
   
   var converseUrl = function() {
@@ -126,6 +126,7 @@ $(document).ready(function() {
   $micButton.mousedown(function() {  
     $micButton.removeClass('normal').addClass('active');
     if (isNodeJs()) {
+	  console.log("inside record");
       record();
     } else {
     } 
